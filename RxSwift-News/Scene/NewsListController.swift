@@ -6,7 +6,9 @@
 //
 
 import UIKit
+import RxSwift
 
+private let disposeBag = DisposeBag()
 
 class NewsListController: UIViewController {
     //MARK: - UI Elements
@@ -25,12 +27,35 @@ class NewsListController: UIViewController {
     private func setup() {
         style()
         layout()
+        populateNews()
     }
     
     //MARK: - Actions
     
 }
 
+//MARK: - GetData
+extension NewsListController {
+    private func populateNews() {
+        
+     
+        let resource = Resource<ArticlesList>(url: URL(string: NEWS_URL )!)
+        
+        URLRequest.load(resource: resource)
+            .subscribe(onNext: { articleResponse in
+                
+                let articles = articleResponse.articles
+                print(articles)
+                
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+                
+                
+            }).disposed(by: disposeBag)
+        
+    }
+}
 
 //MARK: - Helpers
 extension NewsListController {
